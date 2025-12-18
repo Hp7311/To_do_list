@@ -1,0 +1,20 @@
+{
+    "Task1": [
+        "01/03/2025",
+        true,
+        true,
+        7
+    ],
+    "nothing": [
+        null,
+        true,
+        null,
+        null
+    ],
+    "something": [
+        "23/11/2028",
+        false,
+        null,
+        2
+    ]
+}
