@@ -4,6 +4,8 @@ import logging
 logging.basicConfig(level=logging.INFO, format="%(levelname)s | %(name)s | %(message)s")
 logger = logging.getLogger(__name__)
 #logging.disable(logging.CRITICAL)
+
+
 def get_contents(file_path="data.json") -> dict:
     with open(file_path) as file:
         og: dict = json.load(file)

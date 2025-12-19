@@ -1,4 +1,4 @@
-"""get_tasks() returns Task to be run -> run"""
+"""get_tasks() returns Task to be parsed and called -> run"""
 
 import json
 import models

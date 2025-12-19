@@ -8,14 +8,11 @@ from models import Task
 
 
 def main():
-    """get_tasks returns Task object containing:
-    - date of task (only when creating)
-    - name of target
-    - priority: bool
-    - completed: bool
-    - command: exit/new/delete/modify/complete
-    with separate functions for each command
-    note that all other branches return None if exit"""
+    """
+    clear screen
+    get a Task class containing command
+    run module calls the corresponding function in operations
+    """
 
     while True:
         os.system("cls" if os.name == "nt" else "clear")

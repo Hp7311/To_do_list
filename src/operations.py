@@ -1,4 +1,4 @@
-"""core of app. Process according to command """
+"""core of app. Process speecific to command """
 """JSON style:
 	{
 		<number>:

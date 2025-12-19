@@ -1,4 +1,4 @@
-"""runs a Task instance, -> operations.py """
+"""calls the corresponding function in operations given a Task, -> operations.py """
 import operations
 import json
 
