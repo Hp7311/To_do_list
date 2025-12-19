@@ -1,4 +1,4 @@
-"""core of app. Process speecific to command """
+"""core of app. Process specific to command """
 """
 JSON style:
 	{
@@ -47,6 +47,8 @@ def new():
         print("Already a task with same name.")
         new()
     task.name = name
+    logger.info("Task: %s", task)
+
 
     print("Assign a unique number to it")
     new_num = input("> ").strip()
@@ -60,6 +62,7 @@ def new():
         print("Number already assigned")
         new()
     task.number = new_num
+    logger.info("Task: %s", task)
 
     print("When is it due? yyyy-mm-dd")
     date = input("> ").strip()
@@ -67,6 +70,7 @@ def new():
         print("Not a date")
         new()
     task.date = date
+    logger.info("Task: %s", task)
 
     print("Should it be marked as important? y/n")
     important = input("> ").strip().lower()
@@ -74,6 +78,8 @@ def new():
         task.priority = True
     elif important == "n":
         task.priority = False
+    task.completed = False
+    logger.info("Task: %s", task)
 
     # writes to file
     task.save()
@@ -85,10 +91,10 @@ def modify():
 
     # ask which one to modify
     print("Enter the Number of the task you want to modify.")
-    number = int(input("> ").strip())
+    number = input("> ").strip()
 
     # Get other info of the task
-    task.number = number_or_name
+    task.number = number
     task.name, task.date, task.priority, task.completed = existing_tasks[task.number]
 
 
@@ -119,7 +125,7 @@ def modify():
         modify()
     if new_number != "":
         task.name = new_number
-        delete_original_task_for_key(number_or_name)  # deletes dict key-value with chosen number from JSON
+        delete_original_task_for_key(number)  # deletes dict key-value with chosen number from JSON
 
 
     # write back
@@ -151,6 +157,6 @@ def date_valid(s) -> bool:
 def delete_original_task_for_key(key):
     with open(JSON_PATH) as file:
         tasks = json.load(file)
-    del tasks[key]
+    tasks.pop(key)
     with open(JSON_PATH, "w") as write_file:
         json.dump(tasks, write_file)
