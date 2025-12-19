@@ -1,5 +1,6 @@
 """core of app. Process speecific to command """
-"""JSON style:
+"""
+JSON style:
 	{
 		<number>:
 		[
@@ -9,7 +10,8 @@
 		    <completed>,
 		]
 	}
-ALL NUMBERS AND STRINGS ARE APPENDED AS STR"""
+ALL NUMBERS AND STRINGS ARE APPENDED AS STR
+"""
 import json
 import models as task_class
 import logging
@@ -82,25 +84,12 @@ def modify():
     task = task_class.Task()
 
     # ask which one to modify
-    print("Enter the Number or Name of the task you want to modify.")
-    number_or_name = input("> ").strip()
-    state = None
-
-    try:
-        null = int(number_or_name)
-        state = int
-        del null
-    except ValueError:
-        state = str
+    print("Enter the Number of the task you want to modify.")
+    number = int(input("> ").strip())
 
     # Get other info of the task
-    if state is int:
-        task.number = number_or_name
-        task.name, task.date, task.priority, task.completed = existing_tasks[number_or_name]
-
-    elif state is str:
-        task.name = number_or_name
-        task.date, task.priority, task.completed = get_others_by_name(existing_tasks, number_or_name)
+    task.number = number_or_name
+    task.name, task.date, task.priority, task.completed = existing_tasks[task.number]
 
 
     # modify the dict
@@ -158,13 +147,6 @@ def date_valid(s) -> bool:
     except ValueError:
         return False
 
-def get_others_by_name(existing_tasks: dict, name: str):
-    for key, value in existing_tasks.items():
-        if value[0] == name:
-            date = value[1]
-            priority = value[2]
-            completed = value[3]
-            return date, priority, completed
 
 def delete_original_task_for_key(key):
     with open(JSON_PATH) as file:
