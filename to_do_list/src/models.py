@@ -24,9 +24,13 @@ class Task:
 
 
     def save(self, file_path="data.json"):
+        # Read json
         with open(file_path) as file:
             og = json.load(file)
-        og[self.number] = [self.name, self.date, self.priority, self.completed]
+        # Edit/create json
+        og[self.number: str] = [self.name, self.date, self.priority, self.completed]
+
         logger.info("Dict about to be saved: %s", og)
+        # Save json
         with open(file_path, "w") as file:
             json.dump(og, file, indent=2)
