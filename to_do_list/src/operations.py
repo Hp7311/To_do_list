@@ -1,15 +1,19 @@
 """core of app. Process according to command """
 """JSON style:
 	{
-		<name>:
-		[<date>,
-		<priority>,
-		<completed>
-		<number>],
+		<number>:
+		[
+		    <name>,
+		    <date>,
+		    <priority>,
+		    <completed>,
+		]
 	}"""
 import json
 import models as task_class
-
+import logging
+logging.basicConfig(level=logging.INFO, format="%(levelname)s | %(name)s | %(message)s")
+logger = logging.getLogger(__name__)
 
 JSON_PATH = "data.json"
 
@@ -18,9 +22,15 @@ def new():
     """adds another task"""
 
     existing_tasks = task_class.get_contents()
+
     numbers = list()
-    for k, v in existing_tasks.items():
-        numbers.append(v[3])
+    names = list()
+    for num, k in existing_tasks.items():
+        numbers.append(num)
+        names.append(k[0])
+
+    logger.info("exist numbers: %s", numbers)
+    logger.info("exist names: %s", names)
 
     task = task_class.Task()
 
@@ -30,13 +40,19 @@ def new():
     if len(name) > 100:
         print("Name too long")
         new()
-    if name in existing_tasks:
+    if name in names:
         print("Already a task with same name.")
         new()
     task.name = name
 
     print("Assign a unique number to it")
-    new_num = int(input("> ").strip())
+    new_num = input("> ").strip()
+    try:
+        null = int(new_num)
+        del null
+    except ValueError:
+        print("Enter a number")
+        new()
     if new_num in numbers:
         print("Number already assigned")
         new()
@@ -62,6 +78,8 @@ def new():
 
 def modify():
     existing_tasks = task_class.get_contents()
+
+    # ask which one to modify
 
 
 def delete(): ...

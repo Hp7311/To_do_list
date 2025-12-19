@@ -35,7 +35,8 @@ def display(file_path="data.json"):
     tasks: dict = models.get_contents()
 
     largest_name = 0
-    for name in tasks:
+    for k, v in tasks.items():
+        name = v[0]
         if len(name) > largest_name:
             largest_name = len(name)
     LENGTH = largest_name + 4 + 1 + 13 + 1 + 10 + 1 + 11 + 1 + 10 + 1
@@ -57,12 +58,14 @@ def display(file_path="data.json"):
         sep="",
     )
     print("-" * LENGTH)
+
     for k, v in tasks.items():
-        date, priority, completed, num = v
+        num = k
+        name, date, priority, completed = v
 
         print(str(num).center(10), end="|")
-        print(str(k).center(largest_name + 4), end="|")
-        print(str(date).center(13), end="|")
+        print(name.center(largest_name + 4), end="|")
+        print(date.center(13), end="|")
         if priority:
             print("⚠️".center(10), end="|")
         else:

@@ -14,7 +14,7 @@ def main():
     - priority: bool
     - completed: bool
     - command: exit/new/delete/modify/complete
-    with seperate functions for each command
+    with separate functions for each command
     note that all other branches return None if exit"""
 
     while True:

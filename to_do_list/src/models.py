@@ -3,8 +3,8 @@ import json
 import logging
 logging.basicConfig(level=logging.INFO, format="%(levelname)s | %(name)s | %(message)s")
 logger = logging.getLogger(__name__)
-logging.disable(logging.CRITICAL)
-def get_contents(file_path="data.json"):
+#logging.disable(logging.CRITICAL)
+def get_contents(file_path="data.json") -> dict:
     with open(file_path) as file:
         og: dict = json.load(file)
     return og
@@ -26,7 +26,7 @@ class Task:
     def save(self, file_path="data.json"):
         with open(file_path) as file:
             og = json.load(file)
-        og[self.name] = [self.date, self.priority, self.completed, self.number]
+        og[self.number] = [self.name, self.date, self.priority, self.completed]
         logger.info("Dict about to be saved: %s", og)
         with open(file_path, "w") as file:
-            json.dump(og, file)
+            json.dump(og, file, indent=2)
