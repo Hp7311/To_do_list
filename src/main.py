@@ -4,7 +4,6 @@ Program for storing to do lists by JSON
 import os
 import display
 from run import run
-from models import Task
 
 
 def main():
@@ -15,7 +14,7 @@ def main():
     """
 
     while True:
-        #os.system("cls" if os.name == "nt" else "clear")
+        os.system("cls" if os.name == "nt" else "clear")
         task = display.get_tasks()
         if task.command == "exit":
             break

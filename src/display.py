@@ -1,6 +1,7 @@
 """get_tasks() returns Task to be parsed and called -> run"""
 
 import json
+import os
 import models
 
 COMMAND_DICT = {
@@ -10,6 +11,13 @@ COMMAND_DICT = {
         "d": "complete",
         "e": "exit",
     }
+    
+if os.getcwd().endswith("To_do_list/src"):
+	JSON_PATH = "data.json"
+elif os.getcwd().endswith("To_do_list"):
+	JSON_PATH = "src/data.json"
+else:
+	raise FileNotFoundError("Not in correct directory")
 
 def get_tasks() -> models.Task:
     """displays UI and asks for action"""
@@ -25,14 +33,18 @@ def get_tasks() -> models.Task:
     print("\td) Complete a task")
     print("\te) Exit")
     command = input("> ").strip().lower()
+	
+    try:
+    	return models.Task(command=COMMAND_DICT[command])
+    except KeyError:
+    	print("Invalid command")
+    	return
 
-    return models.Task(command=COMMAND_DICT[command])
 
-
-def display(file_path="data.json"):
+def display(file_path=JSON_PATH):
     # print current to-do list content
 
-    tasks: dict = models.get_contents()
+    tasks: dict = models.sort()
 
     largest_name = 0
     for k, v in tasks.items():

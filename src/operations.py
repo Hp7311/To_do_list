@@ -49,10 +49,10 @@ def new():
     name = input("> ").strip()
     if len(name) > 100:
         print("Name too long")
-        new()
+        return
     if name in names:
         print("Already a task with same name.")
-        new()
+        return  # TODO: new() doesnt restart, it runs new() inside if name in names
     task.name = name
     logger.info("Task: %s", task)
 
@@ -64,13 +64,10 @@ def new():
         del null
     except ValueError:
         print("Enter a number")
-        new()
-    if int(new_num) > 100 or int(new_num) < 0:
-    	print("Enter a number from 0 to 100.")
-    	new()
+        return
     if new_num in numbers:
         print("Number already assigned")
-        new()
+        return
     task.number = new_num
     logger.info("Task: %s", task)
 
@@ -78,16 +75,17 @@ def new():
     date = input("> ").strip()
     if not date_valid(date):
         print("Not a date")
-        new()
+        return
     task.date = date
     logger.info("Task: %s", task)
 
-    print("Should it be marked as important? y/n")
+    print("Should it be marked as important? y")
     important = input("> ").strip().lower()
     if important == "y":
         task.priority = True
-    elif important == "n":
+    else:
         task.priority = False
+        
     task.completed = False
     logger.info("Task: %s", task)
 
@@ -103,6 +101,9 @@ def modify():
     # ask which one to modify
     print("Enter the Number of the task you want to modify.")
     number = input("> ").strip()
+    if number not in existing_tasks:
+    	print(f"No task found for {number}")
+    	return
 
     # Get other info of the task
     task.number = number
@@ -134,10 +135,10 @@ def modify():
     except ValueError:
         if new_number != "":
             print("Enter a number")
-            modify()
+            return
     if new_number in existing_tasks:
         print("Number already assigned.")
-        modify()
+        return
     if new_number != "":
         task.number = new_number
         delete_original_task_for_key(number)  # deletes dict key-value with chosen number from JSON
@@ -158,10 +159,10 @@ def delete():
 		null = int(delete_num)
 	except ValueError:
 		print("Enter a number")
-		delete()
+		return
 	if delete_num not in existing_tasks:
 		print(f"Task with id: {delete_num} does not exist.")
-		delete()
+		return
 		
 	existing_tasks.pop(delete_num)  # delete
 	
@@ -184,25 +185,25 @@ def complete():
 		print("Enter a number")
 	if complete_num not in existing_tasks:
 		print(f"task with number {complete_num} does not exist")
-		complete()
+		return
 	
 	name, date, priority, completed = existing_tasks[complete_num]
 	delete_original_task_for_key(complete_num)
-	if completed == True:
+	if completed:
 		print("Already completed.")
 		return
 	task.name = name
 	task.date = date
 	task.priority = priority
 	task.completed = True
-	#logger.info("task after mod. priority: %s", task)
+	logger.info("task after mod. priority: %s", task)
 	
 	task.save()
 
 
 def exit():
     """remember to handle"""
-    pass
+    return
 
 
 from datetime import datetime
