@@ -13,5 +13,7 @@ MATCH_FUNCS = {
 
 
 def run(app):
+    
     func = MATCH_FUNCS[app.command]
-    func()
+    result = func()  # None or operation._
+    return result

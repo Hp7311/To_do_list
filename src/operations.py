@@ -17,6 +17,7 @@ import json
 import models as task_class
 import logging
 import os
+from datetime import datetime
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s | %(name)s | %(message)s")
 logger = logging.getLogger(__name__)
@@ -28,6 +29,7 @@ elif os.getcwd().endswith("To_do_list"):
 else:
     raise FileNotFoundError("Not in correct directory")
 
+MAX_NAME = os.get_terminal_size().columns - 53
 
 def new():
     """adds another task"""
@@ -48,12 +50,12 @@ def new():
     # gets task info and validate
     print("What is the name of the task?")
     name = input("> ").strip()
-    if len(name) > 100:
+    if len(name) > MAX_NAME:
         print("Name too long")
-        return
+        return new
     if name in names:
         print("Already a task with same name.")
-        return  # SOLVED: new() doesnt restart, it runs new() inside if name in names
+        return new # SOLVED: new() doesnt restart, it runs new() inside if name in names
     task.name = name
     logger.info("Task: %s", task)
 
@@ -64,10 +66,13 @@ def new():
         del null
     except ValueError:
         print("Enter a number")
-        return
+        return new
     if new_num in numbers:
         print("ID already assigned")
-        return
+        return new
+    if int(new_num) > 100:
+    	print("ID too big.")
+    	return new
     task.number = new_num
     logger.info("Task: %s", task)
 
@@ -75,7 +80,7 @@ def new():
     date = input("> ").strip()
     if not date_valid(date):
         print("Not a date")
-        return
+        return new
     task.date = date
     logger.info("Task: %s", task)
 
@@ -103,7 +108,7 @@ def modify():
     number = input("> ").strip()
     if number not in existing_tasks:
         print(f"No task found for {number}")
-        return
+        return modify
 
     # Get other info of the task
     task.number = number
@@ -113,6 +118,9 @@ def modify():
     # modify the dict
     print("Enter new name, Enter if remain unchanged.")
     new_name = input("> ").strip()
+    if len(new_name) > MAX_NAME:
+    	print("Name too long")
+    	return modify
     if new_name != "":
         task.name = new_name
     logger.info("task after mod. name: %s", task)
@@ -134,10 +142,13 @@ def modify():
     except ValueError:
         if new_number != "":
             print("Enter a number")
-            return
+            return modify()
+    if int(new_number) > 100:
+    	print("ID too big.")
+    	return new
     if new_number in existing_tasks:
         print("Number already assigned.")
-        return
+        return modify()
     if new_number != "":
         task.number = new_number
         delete_original_task_for_key(
@@ -159,14 +170,14 @@ def delete():
         null = int(delete_num)
     except ValueError:
         print("Enter a number")
-        return
+        return delete
     if delete_num not in existing_tasks:
         print(f"Task with ID: {delete_num} does not exist.")
-        return
+        return delete
 
     existing_tasks.pop(delete_num)  # delete
 
-    logger.info("task about to be saved: %s", existing_tasks)
+    logger.info("task about to be saved after deleted: %s", existing_tasks)
     with open(JSON_PATH, "w") as file:
         json.dump(existing_tasks, file)  # save changes
 
@@ -185,19 +196,19 @@ def complete():
         print("Enter a number")
     if complete_num not in existing_tasks:
         print(f"task with ID {complete_num} does not exist")
-        return
+        return delete
 
     name, date, priority, completed = existing_tasks[complete_num]
     delete_original_task_for_key(complete_num)
     if completed:
         print("Already completed.")
-        return
+        return delete
     task.number = complete_num
     task.name = name
     task.date = date
     task.priority = priority
     task.completed = True
-    logger.info("task after mod. priority: %s", task)
+    logger.info("task after completing %s", task)
 
     task.save()
 
@@ -205,9 +216,6 @@ def complete():
 def exit():
     """remember to handle"""
     return
-
-
-from datetime import datetime
 
 
 def date_valid(s) -> bool:
@@ -219,6 +227,7 @@ def date_valid(s) -> bool:
 
 
 def delete_original_task_for_key(key):
+    """deletes given key-value in JSON_PATH"""
     with open(JSON_PATH) as file:
         tasks = json.load(file)
     tasks.pop(key)

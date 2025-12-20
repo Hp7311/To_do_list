@@ -33,10 +33,7 @@ def get_tasks() -> models.Task:
     print("\tc) Delete a task")
     print("\td) Complete a task")
     print("\te) Exit")
-    try:
-    	command = input("> ").strip().lower()
-    except EOFError:
-    	return models.Task(command="exit")
+    command = input("> ").strip().lower()
 
     try:
         return models.Task(command=COMMAND_DICT[command])

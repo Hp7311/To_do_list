@@ -21,15 +21,23 @@ def main():
     """
 
     while True:
-        if CLEAR:
-        	os.system("cls" if os.name == "nt" else "clear")
-        task = display.get_tasks()
-        if task.command == "exit":
-            break
-        if task.command == "restart":
-            continue
+        try:
+            if CLEAR:
+        	     os.system("cls" if os.name == "nt" else "clear")
+            task = display.get_tasks()  # calls display returns Task
+            if task.command == "exit":
+     	       break
+            if task.command == "restart":
+       	     continue
             
-        run(task)
+            func = run(task)  # calls operation returns None or operation._
+            while func:
+                print()
+                func = run(task)  # repeats
+        	    
+        	    
+        except EOFError:
+            break
 
 
 if __name__ == "__main__":
