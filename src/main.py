@@ -1,10 +1,17 @@
 """
 Program for storing to do lists by JSON
 """
+
 import os
+import logging
 import display
 from run import run
 
+DISABLE_LOGGING =True
+CLEAR = True
+
+if DISABLE_LOGGING:
+	logging.disable(logging.CRITICAL)
 
 def main():
     """
@@ -14,10 +21,14 @@ def main():
     """
 
     while True:
-        os.system("cls" if os.name == "nt" else "clear")
+        if CLEAR:
+        	os.system("cls" if os.name == "nt" else "clear")
         task = display.get_tasks()
         if task.command == "exit":
             break
+        if task.command == "restart":
+            continue
+            
         run(task)
 
 

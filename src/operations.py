@@ -1,4 +1,5 @@
-"""core of app. Process specific to command """
+"""core of app. Process specific to command"""
+
 """
 JSON style:
 	{
@@ -21,11 +22,11 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s | %(name)s | %(mes
 logger = logging.getLogger(__name__)
 
 if os.getcwd().endswith("To_do_list/src"):
-	JSON_PATH = "data.json"
+    JSON_PATH = "data.json"
 elif os.getcwd().endswith("To_do_list"):
-	JSON_PATH = "src/data.json"
+    JSON_PATH = "src/data.json"
 else:
-	raise FileNotFoundError("Not in correct directory")
+    raise FileNotFoundError("Not in correct directory")
 
 
 def new():
@@ -52,12 +53,11 @@ def new():
         return
     if name in names:
         print("Already a task with same name.")
-        return  # TODO: new() doesnt restart, it runs new() inside if name in names
+        return  # SOLVED: new() doesnt restart, it runs new() inside if name in names
     task.name = name
     logger.info("Task: %s", task)
 
-
-    print("Assign a unique number to it")
+    print("Assign a unique ID to it")
     new_num = input("> ").strip()
     try:
         null = int(new_num)
@@ -66,7 +66,7 @@ def new():
         print("Enter a number")
         return
     if new_num in numbers:
-        print("Number already assigned")
+        print("ID already assigned")
         return
     task.number = new_num
     logger.info("Task: %s", task)
@@ -85,7 +85,7 @@ def new():
         task.priority = True
     else:
         task.priority = False
-        
+
     task.completed = False
     logger.info("Task: %s", task)
 
@@ -99,17 +99,16 @@ def modify():
     logger.info("Initial task: %s", task)
 
     # ask which one to modify
-    print("Enter the Number of the task you want to modify.")
+    print("Enter the ID of the task you want to modify.")
     number = input("> ").strip()
     if number not in existing_tasks:
-    	print(f"No task found for {number}")
-    	return
+        print(f"No task found for {number}")
+        return
 
     # Get other info of the task
     task.number = number
     task.name, task.date, task.priority, task.completed = existing_tasks[task.number]
     logger.info("task after selecting: %s", task)
-
 
     # modify the dict
     print("Enter new name, Enter if remain unchanged.")
@@ -126,8 +125,8 @@ def modify():
         else:
             task.priority = True
     logger.info("task after mod. priority: %s", task)
-	
-    print("Enter new number(id), Enter if remain unchanged")
+
+    print("Enter new ID, Enter if remain unchanged")
     new_number = input("> ").strip()
     try:
         null = int(new_number)
@@ -141,64 +140,66 @@ def modify():
         return
     if new_number != "":
         task.number = new_number
-        delete_original_task_for_key(number)  # deletes dict key-value with chosen number from JSON
+        delete_original_task_for_key(
+            number
+        )  # deletes dict key-value with chosen number from JSON
     logger.info("task after mod. priority: %s", task)
-
 
     # write back
     task.save()
 
 
 def delete():
-	existing_tasks: dict = task_class.get_contents()
-	
-	print("Enter task number that you want to delete.")
-	delete_num = input("> ").strip()
-	
-	try:
-		null = int(delete_num)
-	except ValueError:
-		print("Enter a number")
-		return
-	if delete_num not in existing_tasks:
-		print(f"Task with id: {delete_num} does not exist.")
-		return
-		
-	existing_tasks.pop(delete_num)  # delete
-	
-	logger.info("task about to be saved: %s", existing_tasks)
-	with open(JSON_PATH, "w") as file:
-		json.dump(existing_tasks, file)  # save changes
+    existing_tasks: dict = task_class.get_contents()
+
+    print("Enter ID of the task that you want to delete.")
+    delete_num = input("> ").strip()
+
+    try:
+        null = int(delete_num)
+    except ValueError:
+        print("Enter a number")
+        return
+    if delete_num not in existing_tasks:
+        print(f"Task with ID: {delete_num} does not exist.")
+        return
+
+    existing_tasks.pop(delete_num)  # delete
+
+    logger.info("task about to be saved: %s", existing_tasks)
+    with open(JSON_PATH, "w") as file:
+        json.dump(existing_tasks, file)  # save changes
 
 
 def complete():
-	existing_tasks = task_class.get_contents()
-	task = task_class.Task()
-	
-	print("Enter number of the task to complete.")
-	complete_num = input("> ").strip()
-	
-	try:
-		null = int(complete_num)
-		del null
-	except ValueError:
-		print("Enter a number")
-	if complete_num not in existing_tasks:
-		print(f"task with number {complete_num} does not exist")
-		return
-	
-	name, date, priority, completed = existing_tasks[complete_num]
-	delete_original_task_for_key(complete_num)
-	if completed:
-		print("Already completed.")
-		return
-	task.name = name
-	task.date = date
-	task.priority = priority
-	task.completed = True
-	logger.info("task after mod. priority: %s", task)
-	
-	task.save()
+    existing_tasks = task_class.get_contents()
+    task = task_class.Task()
+
+    print("Enter ID of the task to complete.")
+    complete_num = input("> ").strip()
+
+    try:
+        null = int(complete_num)
+        del null
+    except ValueError:
+        print("Enter a number")
+    if complete_num not in existing_tasks:
+        print(f"task with ID {complete_num} does not exist")
+        return
+
+    name, date, priority, completed = existing_tasks[complete_num]
+    delete_original_task_for_key(complete_num)
+    if completed:
+        print("Already completed.")
+        return
+    task.number = complete_num
+    task.name = name
+    task.date = date
+    task.priority = priority
+    task.completed = True
+    logger.info("task after mod. priority: %s", task)
+
+    task.save()
 
 
 def exit():
@@ -222,4 +223,4 @@ def delete_original_task_for_key(key):
         tasks = json.load(file)
     tasks.pop(key)
     with open(JSON_PATH, "w") as write_file:
-        json.dump(tasks, write_file)
+        json.dump(tasks, write_file, indent=4)

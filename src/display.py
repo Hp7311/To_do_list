@@ -5,19 +5,20 @@ import os
 import models
 
 COMMAND_DICT = {
-        "a": "new",
-        "b": "modify",
-        "c": "delete",
-        "d": "complete",
-        "e": "exit",
-    }
-    
+    "a": "new",
+    "b": "modify",
+    "c": "delete",
+    "d": "complete",
+    "e": "exit",
+}
+
 if os.getcwd().endswith("To_do_list/src"):
-	JSON_PATH = "data.json"
+    JSON_PATH = "data.json"
 elif os.getcwd().endswith("To_do_list"):
-	JSON_PATH = "src/data.json"
+    JSON_PATH = "src/data.json"
 else:
-	raise FileNotFoundError("Not in correct directory")
+    raise FileNotFoundError("Not in correct directory")
+
 
 def get_tasks() -> models.Task:
     """displays UI and asks for action"""
@@ -32,13 +33,16 @@ def get_tasks() -> models.Task:
     print("\tc) Delete a task")
     print("\td) Complete a task")
     print("\te) Exit")
-    command = input("> ").strip().lower()
-	
     try:
-    	return models.Task(command=COMMAND_DICT[command])
+    	command = input("> ").strip().lower()
+    except EOFError:
+    	return models.Task(command="exit")
+
+    try:
+        return models.Task(command=COMMAND_DICT[command])
     except KeyError:
-    	print("Invalid command")
-    	return
+        print("Invalid command")
+        return models.Task(command="restart")
 
 
 def display(file_path=JSON_PATH):
@@ -88,4 +92,3 @@ def display(file_path=JSON_PATH):
         else:
             print("✖️".center(11), end="|\n")
     print("-" * LENGTH)
-
