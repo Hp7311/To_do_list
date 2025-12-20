@@ -15,10 +15,17 @@ ALL NUMBERS AND STRINGS ARE APPENDED AS STR
 import json
 import models as task_class
 import logging
+import os
+
 logging.basicConfig(level=logging.INFO, format="%(levelname)s | %(name)s | %(message)s")
 logger = logging.getLogger(__name__)
 
-JSON_PATH = "data.json"
+if os.getcwd().endswith("To_do_list/src"):
+	JSON_PATH = "data.json"
+elif os.getcwd().endswith("To_do_list"):
+	JSON_PATH = "src/data.json"
+else:
+	raise FileNotFoundError("Not in correct directory")
 
 
 def new():
@@ -58,6 +65,9 @@ def new():
     except ValueError:
         print("Enter a number")
         new()
+    if int(new_num) > 100 or int(new_num) < 0:
+    	print("Enter a number from 0 to 100.")
+    	new()
     if new_num in numbers:
         print("Number already assigned")
         new()
@@ -88,6 +98,7 @@ def new():
 def modify():
     existing_tasks: dict = task_class.get_contents()
     task = task_class.Task()
+    logger.info("Initial task: %s", task)
 
     # ask which one to modify
     print("Enter the Number of the task you want to modify.")
@@ -96,6 +107,7 @@ def modify():
     # Get other info of the task
     task.number = number
     task.name, task.date, task.priority, task.completed = existing_tasks[task.number]
+    logger.info("task after selecting: %s", task)
 
 
     # modify the dict
@@ -103,6 +115,7 @@ def modify():
     new_name = input("> ").strip()
     if new_name != "":
         task.name = new_name
+    logger.info("task after mod. name: %s", task)
 
     print("Change priority? y if change.")
     change_priority = input("> ").strip().lower()
@@ -111,11 +124,13 @@ def modify():
             task.priority = False
         else:
             task.priority = True
-
+    logger.info("task after mod. priority: %s", task)
+	
     print("Enter new number(id), Enter if remain unchanged")
     new_number = input("> ").strip()
     try:
         null = int(new_number)
+        del null
     except ValueError:
         if new_number != "":
             print("Enter a number")
@@ -124,18 +139,65 @@ def modify():
         print("Number already assigned.")
         modify()
     if new_number != "":
-        task.name = new_number
+        task.number = new_number
         delete_original_task_for_key(number)  # deletes dict key-value with chosen number from JSON
+    logger.info("task after mod. priority: %s", task)
 
 
     # write back
     task.save()
 
 
-def delete(): ...
+def delete():
+	existing_tasks: dict = task_class.get_contents()
+	
+	print("Enter task number that you want to delete.")
+	delete_num = input("> ").strip()
+	
+	try:
+		null = int(delete_num)
+	except ValueError:
+		print("Enter a number")
+		delete()
+	if delete_num not in existing_tasks:
+		print(f"Task with id: {delete_num} does not exist.")
+		delete()
+		
+	existing_tasks.pop(delete_num)  # delete
+	
+	logger.info("task about to be saved: %s", existing_tasks)
+	with open(JSON_PATH, "w") as file:
+		json.dump(existing_tasks, file)  # save changes
 
 
-def complete(): ...
+def complete():
+	existing_tasks = task_class.get_contents()
+	task = task_class.Task()
+	
+	print("Enter number of the task to complete.")
+	complete_num = input("> ").strip()
+	
+	try:
+		null = int(complete_num)
+		del null
+	except ValueError:
+		print("Enter a number")
+	if complete_num not in existing_tasks:
+		print(f"task with number {complete_num} does not exist")
+		complete()
+	
+	name, date, priority, completed = existing_tasks[complete_num]
+	delete_original_task_for_key(complete_num)
+	if completed == True:
+		print("Already completed.")
+		return
+	task.name = name
+	task.date = date
+	task.priority = priority
+	task.completed = True
+	#logger.info("task after mod. priority: %s", task)
+	
+	task.save()
 
 
 def exit():

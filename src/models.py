@@ -1,12 +1,21 @@
 """class Task with functions to load and save JSON"""
 import json
 import logging
+import os
+
 logging.basicConfig(level=logging.INFO, format="%(levelname)s | %(name)s | %(message)s")
 logger = logging.getLogger(__name__)
-#logging.disable(logging.CRITICAL)
+logging.disable(logging.CRITICAL)
+
+if os.getcwd().endswith("To_do_list/src"):
+	JSON_PATH = "data.json"
+elif os.getcwd().endswith("To_do_list"):
+	JSON_PATH = "src/data.json"
+else:
+	raise FileNotFoundError("Not in correct directory")
 
 
-def get_contents(file_path="data.json") -> dict:
+def get_contents(file_path=JSON_PATH) -> dict:
     with open(file_path) as file:
         og: dict = json.load(file)
     return og
@@ -25,7 +34,7 @@ class Task:
         return self.command
 
 
-    def save(self, file_path="data.json"):
+    def save(self, file_path=JSON_PATH):
         # Read json
         with open(file_path) as file:
             og = json.load(file)

@@ -15,9 +15,9 @@ def main():
     """
 
     while True:
-        os.system("cls" if os.name == "nt" else "clear")
+        #os.system("cls" if os.name == "nt" else "clear")
         task = display.get_tasks()
-        if task == Task(command="exit"):
+        if task.command == "exit":
             break
         run(task)
 
